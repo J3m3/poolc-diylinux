@@ -67,8 +67,6 @@ chmod +x init
 find . | cpio -o -H newc > ../initramfs.cpio
 
 dd if=/dev/zero of=disk.img bs=1M count=64
-# sgdisk -o -n 1:2048:129023 -t 1:ef00 -c 1:"EFI system partition" disk.img
-# gdisk disk.img
 mkfs.vfat -F32 -n EFI disk.img
 mkdir mnt
 mount disk.img mnt
