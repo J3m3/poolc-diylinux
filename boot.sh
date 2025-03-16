@@ -4,8 +4,8 @@ set +xe
 
 print_help() {
   echo "Usage:"
-  echo "  ./boot.sh --direct          Boot directly from a kernel."
-  echo "  ./boot.sh --image           Boot from an image."
+  echo "  ./boot.sh --direct          Boot directly from the kernel image."
+  echo "  ./boot.sh --image           Boot from the bootable disk image."
 }
 
 if [ $# -eq 0 ] || [ "$1" == "-h" ]; then
