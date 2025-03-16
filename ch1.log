@@ -1,0 +1,113 @@
+brew install qemu
+
+wget https://snapshots.linaro.org/components/kernel/leg-virt-tianocore-edk2-upstream/5552/QEMU-AARCH64/RELEASE_GCC/QEMU_EFI.fd
+
+docker image build -t diylinux:6.13 .
+docker container run --privileged --name diylinux -it diylinux:6.13
+
+# ----- CONTAINER -----
+
+cd linux
+make help
+make help | grep tiny
+make tinyconfig
+make menuconfig 
+# General setup
+#   Configure standard kernel features (expert users)
+#     Enable support for printk
+#   Initial RAM filesystem and RAM disk (initramfs/initrd) support
+#      uncheck all the compression support varaints
+# -ACPI (Advanced Configuration and Power Interface) Support
+# Boot options
+#   UEFI runtime support
+#   -Enable support for the ARM64 ACPI parking protocol
+# -Enable the block layer
+# Executable file formats
+#   Kernel support for ELF binaries
+#   Kernel support for scripts starting with #!
+# Device Drivers
+#   PCI support
+#     PCI controller drivers
+#       Generic PCI host controller
+#   -Generic Driver Options
+#     -Maintain a devtmpfs filesystem to mount at /dev
+#     -Automount devtmpfs at /dev, after the kernel mounted the rootfs
+#   Character devices
+#     Enable TTY
+#     Serial drivers
+#       -8250/16550 and compatible serial support
+#         -Console on 8250/16550 and compatible serial port
+#       -ARM AMBA PL010 serial port support
+#         -Support for console on AMBA serail port
+#       ARM AMBA PL011 serail port support
+#         Support for console on AMBA serail port
+#   Virtio drivers
+#     PCI driver for virtio devices
+#   -SCSI device support
+#     -SCSI disk support
+# -File systems
+#   -DOS/FAT/EXFAT/NT Filesystems
+#     -VFAT (Windows-95) fs support
+#   -Pseudo filesystems
+#     -/proc file system support
+#     -sysfs file system support
+
+bear -- make -j$(nproc)
+
+mkdir /distro
+cp arch/arm64/boot/Image.gz /distro
+
+cd /busybox
+make menuconfig
+# Settings
+#   [*] Build static binary (no shared libs)
+# Networking Utilities
+#   [ ] tc (8.3 kb)
+# See https://lists.busybox.net/pipermail/busybox-cvs/2024-January/041752.html
+make -j$(nproc)
+mkdir /distro/initramfs
+make CONFIG_PREFIX=/distro/initramfs install
+
+cd /distro/initramfs
+rm linuxrc
+vim init
+# #!/bin/sh
+# 
+# echo "Hello, MyOwnLinux!"
+# /bin/sh
+chmod +x init
+find . | cpio -o -H newc > ../initramfs.cpio
+
+dd if=/dev/zero of=disk.img bs=1M count=64
+# sgdisk -o -n 1:2048:129023 -t 1:ef00 -c 1:"EFI system partition" disk.img
+# gdisk disk.img
+mkfs.vfat -F32 -n EFI disk.img
+mkdir mnt
+mount disk.img mnt
+mkdir -p mnt/EFI/BOOT
+grub-install --target=arm64-efi --efi-directory=mnt --boot-directory=mnt --removable
+mkdir -p mnt/boot/grub
+vim mnt/boot/grub/grub.cfg
+# set timeout=10
+# set default=0
+# 
+# menuentry "Linux Kernel" {
+#     linux /boot/Image.gz console=ttyAMA0
+#     initrd /boot/initramfs.cpio
+# }
+
+cp Image.gz initramfs.cpio mnt/boot
+cp mnt/boot/grub/grub.cfg mnt/EFI/BOOT/grub.cfg
+umount mnt
+
+# ----- CONTAINER END -----
+
+docker cp $CONTAINER_ID:/distro/disk.img .
+qemu-system-aarch64 \
+  -machine virt,acpi=off \
+  -cpu cortex-a53 \
+  -smp 2 \
+  -m 1G \
+  -drive file=disk.img,format=raw,if=virtio \
+  -bios QEMU_EFI.fd \
+  -nographic
