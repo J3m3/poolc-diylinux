@@ -73,7 +73,7 @@ mount disk.img mnt
 mkdir -p mnt/EFI/BOOT
 grub-install --target=arm64-efi --efi-directory=mnt --boot-directory=mnt --removable
 mkdir -p mnt/boot/grub
-vim mnt/boot/grub/grub.cfg
+vim mnt/EFI/BOOT/grub.cfg
 # set timeout=10
 # set default=0
 # 
@@ -83,7 +83,6 @@ vim mnt/boot/grub/grub.cfg
 # }
 
 cp Image.gz initramfs.cpio mnt/boot
-cp mnt/boot/grub/grub.cfg mnt/EFI/BOOT/grub.cfg
 umount mnt
 
 # ----- CONTAINER END -----
