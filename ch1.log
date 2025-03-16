@@ -12,45 +12,33 @@ make help
 make help | grep tiny
 make tinyconfig
 make menuconfig 
-# General setup
-#   Configure standard kernel features (expert users)
-#     Enable support for printk
-#   Initial RAM filesystem and RAM disk (initramfs/initrd) support
-#      uncheck all the compression support varaints
-# -ACPI (Advanced Configuration and Power Interface) Support
-# Boot options
-#   UEFI runtime support
-#   -Enable support for the ARM64 ACPI parking protocol
-# -Enable the block layer
-# Executable file formats
-#   Kernel support for ELF binaries
-#   Kernel support for scripts starting with #!
-# Device Drivers
-#   PCI support
-#     PCI controller drivers
-#       Generic PCI host controller
-#   -Generic Driver Options
-#     -Maintain a devtmpfs filesystem to mount at /dev
-#     -Automount devtmpfs at /dev, after the kernel mounted the rootfs
-#   Character devices
-#     Enable TTY
-#     Serial drivers
-#       -8250/16550 and compatible serial support
-#         -Console on 8250/16550 and compatible serial port
-#       -ARM AMBA PL010 serial port support
-#         -Support for console on AMBA serail port
-#       ARM AMBA PL011 serail port support
-#         Support for console on AMBA serail port
-#   Virtio drivers
-#     PCI driver for virtio devices
-#   -SCSI device support
-#     -SCSI disk support
-# -File systems
-#   -DOS/FAT/EXFAT/NT Filesystems
-#     -VFAT (Windows-95) fs support
-#   -Pseudo filesystems
-#     -/proc file system support
-#     -sysfs file system support
+# General setup  --->
+#   [*] Configure standard kernel features (expert users)
+#         [*] Enable support for printk
+#   [*] Initial RAM filesystem and RAM disk (initramfs/initrd) support
+#      [ ] Support initial ramdisk/ramfs compressed using gzip
+#      [ ] Support initial ramdisk/ramfs compressed using bzip2
+#      [ ] Support initial ramdisk/ramfs compressed using LZMA
+#      [ ] Support initial ramdisk/ramfs compressed using XZ
+#      [ ] Support initial ramdisk/ramfs compressed using LZO
+#      [ ] Support initial ramdisk/ramfs compressed using LZ4 
+#      [ ] Support initial ramdisk/ramfs compressed using ZSTD
+# Boot options  --->
+#   [*] UEFI runtime support
+# Executable file formats  --->
+#   [*] Kernel support for ELF binaries
+#   [*] Kernel support for scripts starting with #!
+# Device Drivers  --->
+#   [*] PCI support  --->
+#         PCI controller drivers  --->
+#           [*] Generic PCI host controller
+#       Character devices  --->
+#         [*] Enable TTY
+#             Serial drivers  --->
+#               [*] ARM AMBA PL011 serial port support
+#               [*]   Support for console on AMBA serial port
+#   [*] Virtio drivers  --->
+#         [*] PCI driver for virtio devices
 
 bear -- make -j$(nproc)
 
@@ -59,9 +47,9 @@ cp arch/arm64/boot/Image.gz /distro
 
 cd /busybox
 make menuconfig
-# Settings
+# Settings  --->
 #   [*] Build static binary (no shared libs)
-# Networking Utilities
+# Networking Utilities  --->
 #   [ ] tc (8.3 kb)
 # See https://lists.busybox.net/pipermail/busybox-cvs/2024-January/041752.html
 make -j$(nproc)
