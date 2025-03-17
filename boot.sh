@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set +xe
+set -xe
 
 print_help() {
   echo "Usage:"
