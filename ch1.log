@@ -29,16 +29,11 @@ make menuconfig
 #   [*] Kernel support for ELF binaries
 #   [*] Kernel support for scripts starting with #!
 # Device Drivers  --->
-#   [*] PCI support  --->
-#         PCI controller drivers  --->
-#           [*] Generic PCI host controller
 #       Character devices  --->
 #         [*] Enable TTY
 #             Serial drivers  --->
 #               [*] ARM AMBA PL011 serial port support
 #               [*]   Support for console on AMBA serial port
-#   [*] Virtio drivers  --->
-#         [*] PCI driver for virtio devices
 
 bear -- make -j$(nproc)
 
