@@ -29,8 +29,9 @@ elif [ "$1" == "--image" ]; then
     -cpu cortex-a53 \
     -smp 2 \
     -m 1G \
+    -drive if=pflash,format=raw,file=eficode.img,readonly=on \
+    -drive if=pflash,format=raw,file=efivars.img \
     -drive file=disk.img,format=raw,if=virtio \
-    -bios QEMU_EFI.fd \
     -nographic
 else
   print_help

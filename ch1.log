@@ -1,7 +1,5 @@
 brew install qemu
 
-wget https://snapshots.linaro.org/components/kernel/leg-virt-tianocore-edk2-upstream/5552/QEMU-AARCH64/RELEASE_GCC/QEMU_EFI.fd
-
 docker image build -t diylinux:6.13 .
 docker container run --privileged --name diylinux -it diylinux:6.13
 
@@ -80,14 +78,20 @@ vim mnt/EFI/BOOT/grub.cfg
 cp Image.gz initramfs.cpio mnt/boot
 umount mnt
 
+wget https://snapshots.linaro.org/components/kernel/leg-virt-tianocore-edk2-upstream/5552/QEMU-AARCH64/RELEASE_GCC/QEMU_EFI.fd
+truncate -s 64M efivars.img
+truncate -s 64M eficode.img
+dd if=QEMU_EFI.fd of=eficode.img conv=notrunc
+
 # ----- CONTAINER END -----
 
-docker cp $CONTAINER_ID:/distro/disk.img .
+docker cp $CONTAINER_ID:/distro .
 qemu-system-aarch64 \
   -machine virt,acpi=off \
   -cpu cortex-a53 \
   -smp 2 \
   -m 1G \
+  -drive if=pflash,format=raw,file=eficode.img,readonly=on \
+  -drive if=pflash,format=raw,file=efivars.img \
   -drive file=disk.img,format=raw,if=virtio \
-  -bios QEMU_EFI.fd \
   -nographic

@@ -2,3 +2,5 @@ tmp
 *.cpio
 *.img
 *.fd
+
+/distro

@@ -32,6 +32,7 @@ RUN apt install -y --no-install-recommends \
   grub-efi-arm64-bin \
   dosfstools \
   gdisk \
+  wget \
   python3 \
   vim \
   bear
