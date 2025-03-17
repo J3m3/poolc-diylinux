@@ -1,7 +1,7 @@
 brew install qemu
 
 docker image build -t diylinux:6.13 .
-docker container run --privileged --name diylinux -it diylinux:6.13
+docker container run --privileged --name diylinux -it diylinux:6.13 bash
 
 # ----- CONTAINER -----
 
