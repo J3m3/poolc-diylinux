@@ -2,7 +2,7 @@
 
 set -e
 
-trap "umount mnt 2>/dev/null || true; exit 1" ERR EXIT INT TERM
+trap "umount mnt 2>/dev/null || true; exit 1" ERR INT TERM
 
 if [[ "$(pwd)" != "/distro" ]]; then
   echo "Error: This script must be executed from /distro"
@@ -28,5 +28,4 @@ echo "}" >> "$grub_cfg_path"
 
 mkdir mnt/boot
 cp Image.gz initramfs.cpio mnt/boot
-
-trap - ERR EXIT INT TERM
+umount mnt
