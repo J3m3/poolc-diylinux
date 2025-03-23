@@ -24,7 +24,7 @@ if [ "$1" == "--direct" ]; then
     -append "console=ttyAMA0" \
     -nographic
 elif [ "$1" == "--image" ]; then
-  qemu-system-aarch64 \
+  qemu-system-aarch64 -s \
     -machine virt,acpi=off \
     -cpu cortex-a53 \
     -smp 2 \
