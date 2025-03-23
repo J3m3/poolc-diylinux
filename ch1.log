@@ -3,16 +3,13 @@ brew install qemu
 docker image build -t diylinux:6.13 .
 docker container run --privileged --name diylinux -it diylinux:6.13 bash
 
-# ----- CONTAINER -----
-
+CONTAINER {
 cd linux
 make help
 make help | grep tiny
 make tinyconfig
 make menuconfig 
 # General setup  --->
-#   [*] Configure standard kernel features (expert users)
-#         [*] Enable support for printk
 #   [*] Initial RAM filesystem and RAM disk (initramfs/initrd) support
 #         [ ] Support initial ramdisk/ramfs compressed using gzip
 #         [ ] Support initial ramdisk/ramfs compressed using bzip2
@@ -21,17 +18,29 @@ make menuconfig
 #         [ ] Support initial ramdisk/ramfs compressed using LZO
 #         [ ] Support initial ramdisk/ramfs compressed using LZ4 
 #         [ ] Support initial ramdisk/ramfs compressed using ZSTD
+#   [*] Configure standard kernel features (expert users)
+#         [*] Enable support for printk
+#   [*] Load all symbols for debugging/ksymoops
 # Boot options  --->
 #   [*] UEFI runtime support
 # Executable file formats  --->
 #   [*] Kernel support for ELF binaries
 #   [*] Kernel support for scripts starting with #!
 # Device Drivers  --->
+#       Generic Driver Options --->
+#         [*] Maintain a devtmpfs filesystem to mount at /dev
 #       Character devices  --->
 #         [*] Enable TTY
 #             Serial drivers  --->
 #               [*] ARM AMBA PL011 serial port support
 #               [*]   Support for console on AMBA serial port
+# File systems  --->
+#       Pseudo filesystems  --->
+#         [*] /proc file system support
+#         [*] sysfs file system support
+# Kernel hacking
+#       Compile-time checks and compiler options  --->
+#             Debug information (Rely on the toolchain's implicit default DWARF version)
 
 bear -- make -j$(nproc)
 
@@ -50,12 +59,16 @@ mkdir /distro/initramfs
 make CONFIG_PREFIX=/distro/initramfs install
 
 cd /distro/initramfs
+mkdir proc sys dev
 rm linuxrc
 vim init
 # #!/bin/sh
 # 
-# echo "Hello, MyOwnLinux!"
-# /bin/sh
+# mount -t proc none /proc
+# mount -t sysfs none /sys
+# mount -t devtmpfs none /dev
+#
+# setsid sh -c 'exec sh </dev/ttyAMA0 >/dev/ttyAMA0 2>&1'
 chmod +x init
 find . | cpio -o -H newc > ../initramfs.cpio
 
@@ -82,16 +95,37 @@ wget https://snapshots.linaro.org/components/kernel/leg-virt-tianocore-edk2-upst
 truncate -s 64M efivars.img
 truncate -s 64M eficode.img
 dd if=QEMU_EFI.fd of=eficode.img conv=notrunc
-
-# ----- CONTAINER END -----
+}
 
 docker cp $CONTAINER_ID:/distro .
-qemu-system-aarch64 \
-  -machine virt,acpi=off \
-  -cpu cortex-a53 \
-  -smp 2 \
-  -m 1G \
-  -drive if=pflash,format=raw,file=distro/eficode.img,readonly=on \
-  -drive if=pflash,format=raw,file=distro/efivars.img \
-  -drive file=distro/disk.img,format=raw,if=virtio \
-  -nographic
+boot.sh --image
+
+CONTAINER {
+cd /distro/initramfs
+vim hello.c
+# #include <stdio.h>
+# 
+# int main() {
+#   printf("Hello, world!\n");
+#   return 0;
+# }
+gcc -o hello hello.c
+find . | cpio -o -H newc > ../initramfs.cpio
+cd ..
+./mkdisk.sh
+}
+
+docker cp $CONTAINER_ID:/distro .
+boot.sh --image
+
+CONTAINER {
+cd /distro/initramfs
+gcc -static -o hello hello.c
+ldd hello
+find . | cpio -o -H newc > ../initramfs.cpio
+cd ..
+./mkdisk.sh
+}
+
+docker cp $CONTAINER_ID:/distro .
+boot.sh --image
