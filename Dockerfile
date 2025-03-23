@@ -1,4 +1,4 @@
-# Use --privileged option when running the container from the built image
+# Use --privileged option when running a container from the built image
 # This is necessary since we're going to use mount(8) command
 
 FROM ubuntu:noble
@@ -35,6 +35,10 @@ RUN apt install -y --no-install-recommends \
   wget \
   python3 \
   vim \
-  bear
+  bear \
+  file \
+  clangd \
+  gcc-arm-linux-gnueabi \
+  gdb-multiarch
 
 ENV ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu-
