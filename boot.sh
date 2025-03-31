@@ -18,7 +18,7 @@ if [ "$1" == "--direct" ]; then
     -machine virt,acpi=off \
     -cpu cortex-a53 \
     -smp 2 \
-    -m 1G \
+    -m 32M \
     -kernel Image.gz \
     -initrd initramfs.cpio \
     -append "console=ttyAMA0" \
@@ -28,10 +28,10 @@ elif [ "$1" == "--image" ]; then
     -machine virt,acpi=off \
     -cpu cortex-a53 \
     -smp 2 \
-    -m 1G \
+    -m 128M \
     -drive if=pflash,format=raw,file=eficode.img,readonly=on \
     -drive if=pflash,format=raw,file=efivars.img \
-    -drive file=disk.img,format=raw,if=virtio \
+    -drive if=virtio,format=raw,file=disk.img, \
     -nographic
 else
   print_help
