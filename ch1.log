@@ -1,14 +1,11 @@
-brew install qemu
-
 docker image build -t diylinux:6.13 .
 docker container run --privileged --name diylinux -it diylinux:6.13 bash
 
-CONTAINER {
 cd linux
 make help
 make help | grep tiny
 make tinyconfig
-make menuconfig 
+make menuconfig
 # General setup  --->
 #       Preemption Model (Preemptive Kernel (Low-Latency Desktop))
 #   [*] Initial RAM filesystem and RAM disk (initramfs/initrd) support
@@ -75,35 +72,16 @@ vim init
 chmod +x init
 find . | cpio -o -H newc > ../initramfs.cpio
 
-dd if=/dev/zero of=disk.img bs=1M count=36
-mkfs.vfat -F32 -n EFI disk.img
-mkdir mnt
-mount disk.img mnt
-mkdir -p mnt/EFI/BOOT
-grub-install --target=arm64-efi --efi-directory=mnt --boot-directory=mnt --removable
-vim mnt/EFI/BOOT/grub.cfg
-# set timeout=10
-# set default=0
-# 
-# menuentry "Linux Kernel" {
-#     linux /boot/Image.gz console=ttyAMA0
-#     initrd /boot/initramfs.cpio
-# }
-
-mkdir mnt/boot
-cp Image.gz initramfs.cpio mnt/boot
-umount mnt
+cd /distro
+./mkdisk.sh
 
 wget https://snapshots.linaro.org/components/kernel/leg-virt-tianocore-edk2-upstream/5552/QEMU-AARCH64/RELEASE_GCC/QEMU_EFI.fd
 truncate -s 64M efivars.img
 truncate -s 64M eficode.img
 dd if=QEMU_EFI.fd of=eficode.img conv=notrunc
-}
 
-docker cp $CONTAINER_ID:/distro .
-boot.sh --image
+./boot.sh --image
 
-CONTAINER {
 cd /distro/initramfs
 vim hello.c
 # #include <stdio.h>
@@ -116,19 +94,14 @@ gcc -o hello hello.c
 find . | cpio -o -H newc > ../initramfs.cpio
 cd ..
 ./mkdisk.sh
-}
 
-docker cp $CONTAINER_ID:/distro .
-boot.sh --image
+./boot.sh --image
 
-CONTAINER {
 cd /distro/initramfs
 gcc -static -o hello hello.c
 ldd hello
 find . | cpio -o -H newc > ../initramfs.cpio
 cd ..
 ./mkdisk.sh
-}
 
-docker cp $CONTAINER_ID:/distro .
-boot.sh --image
+./boot.sh --image
