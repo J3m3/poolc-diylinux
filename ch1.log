@@ -45,7 +45,7 @@ make menuconfig
 bear -- make -j$(nproc)
 
 mkdir /distro
-cp arch/arm64/boot/Image.gz /distro
+cp arch/arm64/boot/Image /distro
 
 cd /busybox
 make menuconfig
@@ -73,9 +73,11 @@ chmod +x init
 find . | cpio -o -H newc > ../initramfs.cpio
 
 cd /distro
+apt update && apt install refind
+# no
 ./mkdisk.sh
 
-wget https://snapshots.linaro.org/components/kernel/leg-virt-tianocore-edk2-upstream/5552/QEMU-AARCH64/RELEASE_GCC/QEMU_EFI.fd
+cp /usr/share/qemu-efi-aarch64/QEMU_EFI.fd .
 truncate -s 64M efivars.img
 truncate -s 64M eficode.img
 dd if=QEMU_EFI.fd of=eficode.img conv=notrunc
@@ -90,7 +92,7 @@ vim hello.c
 #   printf("Hello, world!\n");
 #   return 0;
 # }
-gcc -o hello hello.c
+aarch64-linux-gnu-gcc -o hello hello.c
 find . | cpio -o -H newc > ../initramfs.cpio
 cd ..
 ./mkdisk.sh
@@ -98,7 +100,7 @@ cd ..
 ./boot.sh --image
 
 cd /distro/initramfs
-gcc -static -o hello hello.c
+aarch64-linux-gnu-gcc -static -o hello hello.c
 ldd hello
 find . | cpio -o -H newc > ../initramfs.cpio
 cd ..
