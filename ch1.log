@@ -10,6 +10,7 @@ make help | grep tiny
 make tinyconfig
 make menuconfig 
 # General setup  --->
+#       Preemption Model (Preemptive Kernel (Low-Latency Desktop))
 #   [*] Initial RAM filesystem and RAM disk (initramfs/initrd) support
 #         [ ] Support initial ramdisk/ramfs compressed using gzip
 #         [ ] Support initial ramdisk/ramfs compressed using bzip2
@@ -21,6 +22,8 @@ make menuconfig
 #   [*] Configure standard kernel features (expert users)
 #         [*] Enable support for printk
 #   [*] Load all symbols for debugging/ksymoops
+# Kernel features
+#   [*] Kernel support for 32-bit EL0
 # Boot options  --->
 #   [*] UEFI runtime support
 # Executable file formats  --->
