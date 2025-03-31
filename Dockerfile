@@ -15,9 +15,8 @@ RUN git clone --depth 1 --branch v6.13 git://git.kernel.org/pub/scm/linux/kernel
 RUN git clone --depth 1 git://busybox.net/busybox.git
 
 RUN apt update && apt install -y --no-install-recommends \
-  cpio grub-efi-arm64 grub-efi-arm64-bin dosfstools gdisk \
-  wget python3 vim bear clangd file gcc-arm-linux-gnueabi \
-  gdb-multiarch qemu-system-aarch64 \
+  cpio dosfstools gdisk wget python3 vim bear clangd file \
+  gcc-arm-linux-gnueabi gdb-multiarch qemu-system qemu-efi-aarch64 \
   && apt clean && rm -rf /var/lib/apt/lists/*
 
 ENV ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu-
