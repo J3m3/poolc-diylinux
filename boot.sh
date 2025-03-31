@@ -31,7 +31,7 @@ elif [ "$1" == "--image" ]; then
     -m 1G \
     -drive if=pflash,format=raw,file=eficode.img,readonly=on \
     -drive if=pflash,format=raw,file=efivars.img \
-    -drive file=distro/disk.img,format=raw,if=virtio \
+    -drive file=disk.img,format=raw,if=virtio \
     -nographic
 else
   print_help
