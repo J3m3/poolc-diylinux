@@ -13,12 +13,10 @@ mount_point="mnt"
 
 cleanup() {
   if [[ -n $block_dev ]]; then
+    umount --all-targets $block_dev 2>/dev/null
     losetup -d $block_dev
   fi
-  if [[ -d $mount_point ]]; then
-    umount --all-targets $mount_point 2>/dev/null
-    rmdir $mount_point 2>/dev/null
-  fi
+  rmdir $mount_point 2>/dev/null
   rm -f $img
   exit 1
 }
@@ -43,12 +41,11 @@ cp Image initramfs.cpio $mount_point/EFI/BOOT
 CFG_PATH="mnt/EFI/BOOT/refind.conf"
 echo "timeout 10" > $CFG_PATH
 echo "textonly" >> $CFG_PATH
-echo "default_selectin 1" >> $CFG_PATH
 echo "menuentry \"Custom Linux\" {" >> $CFG_PATH
 echo "loader /EFI/BOOT/Image" >> $CFG_PATH
 echo "initrd /EFI/BOOT/initramfs.cpio" >> $CFG_PATH
 echo "options \"console=ttyAMA0\"" >> $CFG_PATH
 echo "}" >> $CFG_PATH
 
+umount --all-target $block_dev
 losetup -d $block_dev
-umount --all-target $mount_point
