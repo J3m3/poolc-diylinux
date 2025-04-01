@@ -17,6 +17,7 @@ RUN git clone --depth 1 git://busybox.net/busybox.git
 RUN apt update && apt install -y --no-install-recommends \
   cpio dosfstools gdisk wget python3 vim bear clangd file \
   gcc-arm-linux-gnueabi gdb-multiarch qemu-system qemu-efi-aarch64 \
+  libc6-dev-armel-cross \
   && apt clean && rm -rf /var/lib/apt/lists/*
 
 ENV ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu-
