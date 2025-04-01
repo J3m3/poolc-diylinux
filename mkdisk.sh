@@ -25,6 +25,8 @@ trap cleanup INT TERM ERR
 
 cp /linux/arch/arm64/boot/Image .
 
+cd initramfs && find . | cpio -o -H newc > ../initramfs.cpio && cd ..
+
 dd if=/dev/zero of=$img bs=1M count=36
 block_dev=$(losetup -f --show disk.img)
 mkfs.vfat -F32 $block_dev
