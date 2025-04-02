@@ -11,7 +11,7 @@ typedef struct silly_info {
 
 int main(int argc, char **argv) {
   SillyInfo info = {0};
-  long r = syscall(467, argc < 2 ? 1 : atoi(argv[1]), &info);
+  long r = syscall(467, argc < 2 ? getpid() : atoi(argv[1]), &info);
   if (r < 0) {
     fprintf(stderr, "Errno: %ld\n", r);
     perror("Error");
