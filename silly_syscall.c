@@ -1,6 +1,13 @@
+/*
+ * There are indeed many "silly" points in this implementation...
+ * Though, I think we can learn a lot of things while implementing
+ * and discussing about this (again) "silly" system call.
+ */
+
 #include <linux/compat.h>
 #include <linux/rcupdate.h>
 #include <linux/sched.h>
+#include <linux/stddef.h>
 #include <linux/string.h>
 #include <linux/syscalls.h>
 #include <linux/types.h>
@@ -20,20 +27,25 @@ struct compat_silly_info {
 	char comm[TASK_COMM_LEN];
 };
 
-long do_sys_silly(pid_t pid, struct silly_info *kinfo);
-long do_sys_silly(pid_t pid, struct silly_info *kinfo)
+long do_sys_silly(pid_t pid, struct silly_info *kinfo, bool is_compat);
+long do_sys_silly(pid_t pid, struct silly_info *kinfo, bool is_compat)
 {
 	if (pid < 1)
 		return -EINVAL;
 
-	rcu_read_lock();
-	struct task_struct *task = find_task_by_vpid(pid);
-	if (!task) {
-		rcu_read_unlock();
+	struct task_struct *task = find_get_task_by_vpid(pid);
+	if (!task)
+		return -ESRCH;
+	// A "silly" guard that prevents 32-bit process from accessing 64-bit
+	// processes and vice versa. This subtly tempts us to explore the
+	// intricacies of compatibility system call implementation. It creates
+	// an artificial need to bridge the gap between 32-bit and 64-bit worlds.
+	// This also simplifies `syscall_test.c`, since both system call
+	// implementation can share (textually) same struct.
+	if (is_compat_thread(task_thread_info(task)) ^ is_compat) {
+		put_task_struct(task);
 		return -ESRCH;
 	}
-	get_task_struct(task);
-	rcu_read_unlock();
 
 	// Retrieve nice value
 	kinfo->nice = task_nice(task);
@@ -65,7 +77,7 @@ SYSCALL_DEFINE2(silly, pid_t, pid, struct silly_info __user *, uinfo)
 	struct silly_info kinfo;
 	memset(&kinfo, 0, sizeof(kinfo));
 
-	long err = do_sys_silly(pid, &kinfo);
+	long err = do_sys_silly(pid, &kinfo, false);
 	if (err)
 		return err;
 
@@ -83,7 +95,7 @@ COMPAT_SYSCALL_DEFINE2(silly, pid_t, pid, struct compat_silly_info __user *,
 	struct silly_info kinfo;
 	memset(&kinfo, 0, sizeof(kinfo));
 
-	long err = do_sys_silly(pid, &kinfo);
+	long err = do_sys_silly(pid, &kinfo, true);
 	if (err)
 		return err;
 
