@@ -48,10 +48,10 @@ index 87866b037..f102b7f10 100644
  obj-$(CONFIG_VHOST_TASK) += vhost_task.o
 diff --git a/kernel/silly.c b/kernel/silly.c
 new file mode 100644
-index 000000000..e6fd2d836
+index 000000000..27ea96f3c
 --- /dev/null
 +++ b/kernel/silly.c
-@@ -0,0 +1,111 @@
+@@ -0,0 +1,115 @@
 +/*
 + * There are indeed many "silly" points in this implementation...
 + * Though, I think we can learn a lot of things while implementing
@@ -94,6 +94,8 @@ index 000000000..e6fd2d836
 +	// processes and vice versa. This subtly tempts us to explore the
 +	// intricacies of compatibility system call implementation. It creates
 +	// an artificial need to bridge the gap between 32-bit and 64-bit worlds.
++	// This also simplifies `syscall_test.c`, since both system call
++	// implementation can share (textually) same struct.
 +	if (is_compat_thread(task_thread_info(task)) ^ is_compat) {
 +		put_task_struct(task);
 +		return -ESRCH;
@@ -133,6 +135,7 @@ index 000000000..e6fd2d836
 +	if (err)
 +		return err;
 +
++	// See also `copy_struct_to_user`
 +	if (copy_to_user(uinfo, &kinfo, sizeof(kinfo)))
 +		return -EFAULT;
 +
@@ -158,6 +161,7 @@ index 000000000..e6fd2d836
 +	kcinfo.end_heap = (compat_ulong_t)kinfo.end_heap;
 +	strscpy_pad(kcinfo.comm, kinfo.comm, TASK_COMM_LEN);
 +
++	// See also `copy_struct_to_user`
 +	if (copy_to_user(ucinfo, &kcinfo, sizeof(kcinfo)))
 +		return -EFAULT;
 +

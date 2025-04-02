@@ -81,6 +81,7 @@ SYSCALL_DEFINE2(silly, pid_t, pid, struct silly_info __user *, uinfo)
 	if (err)
 		return err;
 
+	// See also `copy_struct_to_user`
 	if (copy_to_user(uinfo, &kinfo, sizeof(kinfo)))
 		return -EFAULT;
 
@@ -106,6 +107,7 @@ COMPAT_SYSCALL_DEFINE2(silly, pid_t, pid, struct compat_silly_info __user *,
 	kcinfo.end_heap = (compat_ulong_t)kinfo.end_heap;
 	strscpy_pad(kcinfo.comm, kinfo.comm, TASK_COMM_LEN);
 
+	// See also `copy_struct_to_user`
 	if (copy_to_user(ucinfo, &kcinfo, sizeof(kcinfo)))
 		return -EFAULT;
 
