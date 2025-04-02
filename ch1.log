@@ -93,7 +93,6 @@ vim hello.c
 #   return 0;
 # }
 aarch64-linux-gnu-gcc -o hello hello.c
-find . | cpio -o -H newc > ../initramfs.cpio
 cd ..
 ./mkdisk.sh
 
@@ -102,7 +101,6 @@ cd ..
 cd /distro/initramfs
 aarch64-linux-gnu-gcc -static -o hello hello.c
 ldd hello
-find . | cpio -o -H newc > ../initramfs.cpio
 cd ..
 ./mkdisk.sh
 
