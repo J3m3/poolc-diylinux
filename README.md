@@ -64,6 +64,16 @@
 - [커널 이미지](http://jake.dothome.co.kr/image1/)
 - [[Buildroot] 임베디드 리눅스 구조의 이해](https://underflow101.tistory.com/32)
 
+### Debugging w/ QEMU
+
+- [Is it possible to use gdb and qemu to debug linux user space programs and kernel space simultaneously?](https://stackoverflow.com/questions/26271901/is-it-possible-to-use-gdb-and-qemu-to-debug-linux-user-space-programs-and-kernel)
+- [Linux Kernel Debugging](https://cs4118.github.io/dev-guides/kernel-debugging.html)
+
+### System call implementation
+
+- [Adding a New System Call](https://docs.kernel.org/process/adding-syscalls.html)
+- [[PATCH 00/17] arch: convert everything to syscall.tbl](https://lore.kernel.org/lkml/CAJF2gTQuu3SBKR-Q7+njKqbXZsRgWHjfDBYgBGMbERpuqWKjew@mail.gmail.com/T)
+
 ### Inspired by
 
 - [Linux From Scratch](https://www.linuxfromscratch.org/)
