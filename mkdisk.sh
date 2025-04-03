@@ -31,11 +31,12 @@ dd if=/dev/zero of=$img bs=1M count=36
 block_dev=$(losetup -f --show disk.img)
 mkfs.vfat -F32 $block_dev
 
-refind-install --usedefault $block_dev
+refind-bin-0.14.2/refind-install --usedefault $block_dev
 
 mkdir -p $mount_point
 mount $block_dev $mount_point
 
+rm -rf $mount_point/EFI/BOOT/{BOOT.CSV,bootia32.efi,bootx64.efi,icons,keys,refind.conf-sample}
 mv $mount_point/EFI/BOOT/refind_aa64.efi $mount_point/EFI/BOOT/BOOTAA64.efi
 
 cp Image initramfs.cpio $mount_point/EFI/BOOT

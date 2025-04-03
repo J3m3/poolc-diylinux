@@ -73,8 +73,8 @@ chmod +x init
 find . | cpio -o -H newc > ../initramfs.cpio
 
 cd /distro
-apt update && apt install refind
-# no
+wget https://sourceforge.net/projects/refind/files/0.14.2/refind-bin-0.14.2.zip
+unzip refind-bin-0.14.2.zip
 ./mkdisk.sh
 
 cp /usr/share/qemu-efi-aarch64/QEMU_EFI.fd .
