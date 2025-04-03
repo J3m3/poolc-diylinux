@@ -73,6 +73,8 @@
 
 - [Adding a New System Call](https://docs.kernel.org/process/adding-syscalls.html)
 - [[PATCH 00/17] arch: convert everything to syscall.tbl](https://lore.kernel.org/lkml/CAJF2gTQuu3SBKR-Q7+njKqbXZsRgWHjfDBYgBGMbERpuqWKjew@mail.gmail.com/T)
+- [The Complicated History of a Simple Linux Kernel API](https://grsecurity.net/complicated_history_simple_linux_kernel_api)
+- [How can PSTATE.SPSel and SP_EL0 be Used by Software in Practice? - SP_EL0 usage in Linux kernel](https://developer.arm.com/documentation/ka005621/latest/)
 
 ### Inspired by
 
