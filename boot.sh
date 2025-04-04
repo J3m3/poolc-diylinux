@@ -14,12 +14,12 @@ if [ $# -eq 0 ] || [ "$1" == "-h" ]; then
 fi
 
 if [ "$1" == "--direct" ]; then
-  qemu-system-aarch64 \
+  qemu-system-aarch64 -s \
     -machine virt,acpi=off \
     -cpu cortex-a53 \
     -smp 2 \
     -m 32M \
-    -kernel Image.gz \
+    -kernel Image \
     -initrd initramfs.cpio \
     -append "console=ttyAMA0" \
     -nographic
